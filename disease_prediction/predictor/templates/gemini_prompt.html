@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini AI Chat</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Anonymous+Pro" rel="stylesheet">
+
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Anonymous Pro', monospace;
+            background-color: #673ab7;
+            color: #f1f1f1;
+            text-align: center;
+            padding: 5em;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            margin: auto;
+        }
+
+        h2 {
+            color: black;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        label {
+            color: black;
+            font-size: 16px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        /* Response Box */
+        .response-box {
+            background: #f9f9f9;
+            border-left: 5px solid #007bff;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 18px;
+            color: black;
+            border-radius: 5px;
+            text-align: left;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-y: auto;
+            max-width: 100%;
+            min-height: 50px;
+            max-height: 300px;
+            transition: max-height 0.5s ease-in-out;
+        }
+
+        /* Typewriter Animation */
+        .cursor {
+            position: relative;
+            border-right: 2px solid rgba(0, 0, 0, 0.75);
+            font-size: 18px;
+            white-space: pre-wrap;
+            overflow: hidden;
+        }
+
+        @keyframes blinkingCursor {
+            50% { border-color: transparent; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Gemini AI Chat</h2>
+
+        <form method="post" onsubmit="showLoading()">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Enter your prompt:</label>
+                <textarea name="prompt" id="prompt" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn" id="submit-btn">Get Response</button>
+        </form>
+
+        <p class="loading" id="loading">Processing... Please wait.</p>
+
+        {% if response %}
+            <h3>AI Response:</h3>
+            <div class="response-box" id="response-box"></div>
+        {% endif %}
+    </div>
+
+    <script>
+        function showLoading() {
+            document.getElementById("loading").style.display = "block";
+        }
+
+        function typeWriterEffect(text, element, speed = 50) {
+            let i = 0;
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    element.parentElement.style.maxHeight = element.parentElement.scrollHeight + "px";
+                    element.scrollTop = element.scrollHeight;
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            type();
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const responseBox = document.getElementById("response-box");
+            const responseText = `{{ response|escapejs }}`;
+            if (responseBox && responseText) {
+                responseBox.innerHTML = '<span class="cursor"></span>';
+                typeWriterEffect(responseText, responseBox.querySelector(".cursor"));
+            }
+        });
+    </script>
+</body>
+</html>
